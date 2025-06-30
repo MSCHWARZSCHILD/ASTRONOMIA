@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carga y Descarga de Archivos - Museo Observatorio San Miguel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --space-blue: #0b0d17;
+            --cosmic-purple: #1e1a3e;
+            --starlight-yellow: #f6ad55;
+            --nebula-pink: #d53f8c;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--space-blue);
+            color: #e2e8f0;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(214, 188, 250, 0.05) 0%, rgba(214, 188, 250, 0) 40%),
+                radial-gradient(circle at 90% 80%, rgba(246, 173, 85, 0.05) 0%, rgba(246, 173, 85, 0) 40%),
+                radial-gradient(circle at 50% 50%, rgba(100, 100, 220, 0.03) 0%, rgba(100, 100, 220, 0) 30%);
+            scroll-behavior: smooth;
+        }
+        
+        .navbar-glass {
+            background-color: rgba(11, 13, 23, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(246, 173, 85, 0.2);
+        }
+        
+        .card {
+            background-color: rgba(30, 26, 62, 0.7);
+            border: 1px solid rgba(109, 40, 217, 0.3);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(214, 188, 250, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--starlight-yellow), var(--nebula-pink));
+            color: #1a202c;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(246, 173, 85, 0.4);
+        }
+        
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 20px;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(25deg);
+            transition: all 0.5s;
+        }
+        
+        .btn-primary:hover::after {
+            left: 120%;
+        }
+        
+        .section-title {
+            color: var(--starlight-yellow);
+            position: relative;
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--starlight-yellow), var(--nebula-pink));
+            border-radius: 3px;
+        }
+
+        .star-decoration {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 5s infinite;
+            z-index: 0; /* Ensure stars are behind content */
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0.2; transform: scale(0.8); }
+        }
+        .dynamic-satellite {
+            transition: transform 0.5s ease-in-out;
+        }
+        .dynamic-satellite:hover {
+            transform: rotate(360deg) scale(1.2);
+        }
+        .nav-link-active {
+            color: var(--starlight-yellow);
+            font-weight: 600;
+        }
+
+        /* Custom file input styling */
+        .custom-file-input::-webkit-file-upload-button {
+            visibility: hidden;
+        }
+        .custom-file-input::before {
+            content: 'Seleccionar archivo';
+            display: inline-block;
+            background: linear-gradient(135deg, var(--cosmic-purple), var(--nebula-pink));
+            border: 1px solid var(--starlight-yellow);
+            border-radius: 0.375rem; /* rounded-md */
+            padding: 0.5rem 1rem; /* px-4 py-2 */
+            outline: none;
+            white-space: nowrap;
+            -webkit-user-select: none;
+            user-select: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--starlight-yellow);
+            transition: all 0.2s ease-in-out;
+        }
+        .custom-file-input:hover::before {
+            background: linear-gradient(135deg, var(--nebula-pink), var(--cosmic-purple));
+            border-color: var(--nebula-pink);
+        }
+        .custom-file-input:active::before {
+            background: linear-gradient(135deg, var(--nebula-pink), var(--cosmic-purple));
+        }
+        .file-name-display {
+            margin-top: 0.5rem;
+            font-style: italic;
+            color: #a0aec0; /* text-gray-500 */
+        }
+    </style>
+</head>
+<body>
+    <div class="star-decoration" style="top: 5%; left: 5%; width: 1px; height: 1px; animation-delay: 0.5s;"></div>
+    <div class="star-decoration" style="top: 15%; left: 10%; width: 2px; height: 2px;"></div>
+    <div class="star-decoration" style="top: 10%; left: 30%; width: 1px; height: 1px; animation-delay: 1.5s;"></div>
+    <div class="star-decoration" style="top: 25%; left: 85%; width: 3px; height: 3px; animation-delay: 1s;"></div>
+    <div class="star-decoration" style="top: 30%; left: 60%; width: 2px; height: 2px; animation-delay: 2.5s;"></div>
+    <div class="star-decoration" style="top: 40%; left: 45%; width: 2px; height: 2px; animation-delay: 2s;"></div>
+    <div class="star-decoration" style="top: 50%; left: 90%; width: 1px; height: 1px; animation-delay: 3.5s;"></div>
+    <div class="star-decoration" style="top: 60%; left: 15%; width: 2px; height: 2px; animation-delay: 0.2s;"></div>
+    <div class="star-decoration" style="top: 70%; left: 25%; width: 3px; height: 3px; animation-delay: 3s;"></div>
+    <div class="star-decoration" style="top: 75%; left: 75%; width: 1px; height: 1px; animation-delay: 4.5s;"></div>
+    <div class="star-decoration" style="top: 85%; left: 65%; width: 2px; height: 2px; animation-delay: 4s;"></div>
+    <div class="star-decoration" style="top: 90%; left: 5%; width: 3px; height: 3px; animation-delay: 0.8s;"></div>
+    <div class="star-decoration" style="top: 95%; left: 50%; width: 1px; height: 1px; animation-delay: 2.2s;"></div>
+    <div class="star-decoration" style="top: 5%; left: 70%; width: 2px; height: 2px; animation-delay: 1.8s;"></div>
+    <div class="star-decoration" style="top: 65%; left: 95%; width: 2px; height: 2px; animation-delay: 3.2s;"></div>
+
+    <nav class="navbar-glass sticky top-0 z-50 shadow-lg">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-xl md:text-2xl font-bold text-white flex items-center">
+                <i class="fas fa-satellite mr-2 text-yellow-400 dynamic-satellite"></i>
+                <span class="hidden sm:inline">Museo Observatorio San Miguel</span>
+                <span class="sm:hidden">MOSM</span>
+            </a>
+            <div class="hidden md:flex space-x-3 lg:space-x-4 items-center">
+                <a href="index.html#ubicacion" class="text-gray-300 hover:text-yellow-400 transition duration-300">Ubicación</a>
+                <a href="index.html#equipo" class="text-gray-300 hover:text-yellow-400 transition duration-300">Quiénes Somos</a>
+                <a href="index.html#eventos" class="text-gray-300 hover:text-yellow-400 transition duration-300">Eventos</a>
+                <a href="cursos.html" class="text-gray-300 hover:text-yellow-400 transition duration-300">Cursos</a>
+                <a href="blog.html" class="text-gray-300 hover:text-yellow-400 transition duration-300">Blog</a>
+                <a href="foro.html" class="text-gray-300 hover:text-yellow-400 transition duration-300">Foro</a>
+                <a href="up_download.html" class="nav-link-active transition duration-300">Up/Download</a>
+                <a href="calendario.html" class="text-gray-300 hover:text-yellow-400 transition duration-300">Calendario</a>
+                <a href="premium.html" class="btn-primary px-4 py-2 rounded-full font-semibold text-sm">
+                    <i class="fas fa-star mr-1"></i>Premium
+                </a>
+            </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-gray-300 focus:outline-none">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 space-y-2">
+            <a href="index.html#ubicacion" class="block text-gray-300 hover:text-yellow-400 transition duration-300">Ubicación</a>
+            <a href="index.html#equipo" class="block text-gray-300 hover:text-yellow-400 transition duration-300">Quiénes Somos</a>
+            <a href="index.html#eventos" class="block text-gray-300 hover:text-yellow-400 transition duration-300">Eventos</a>
+            <a href="cursos.html" class="block text-gray-300 hover:text-yellow-400 transition duration-300">Cursos</a>
+            <a href="blog.html" class="block text-gray-300 hover:text-yellow-400 transition duration-300">Blog</a>
+            <a href="foro.html" class="block text-gray-300 hover:text-yellow-400 transition duration-300">Foro</a>
+            <a href="up_download.html" class="block nav-link-active transition duration-300">Up/Download</a>
+            <a href="calendario.html" class="block text-gray-300 hover:text-yellow-400 transition duration-300">Calendario</a>
+            <a href="premium.html" class="block btn-primary px-4 py-2 rounded-full font-semibold text-center mt-2">
+                <i class="fas fa-star mr-1"></i>Premium
+            </a>
+        </div>
+    </nav>
+
+    <header class="py-16 md:py-24 text-center relative overflow-hidden" style="background-image: url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center;">
+        <div class="absolute inset-0 bg-space-blue opacity-85"></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Zona de Carga y Descarga</h1>
+            <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
+                Comparte tus astrofotografías, observaciones, o descarga material educativo y recursos de nuestra comunidad.
+            </p>
+        </div>
+    </header>
+
+    <main class="py-12">
+        <div class="container mx-auto px-6">
+            
+            <section id="upload-section" class="mb-16">
+                <h2 class="text-3xl font-bold text-center mb-10 section-title">Sube Tus Archivos</h2>
+                <div class="max-w-2xl mx-auto card p-6 md:p-8">
+                    <form id="uploadForm">
+                        <div class="mb-6">
+                            <label for="fileTitle" class="block text-starlight-yellow text-sm font-bold mb-2">Título del Archivo:</label>
+                            <input type="text" id="fileTitle" name="fileTitle" class="shadow appearance-none border border-cosmic-purple rounded w-full py-3 px-4 bg-space-blue text-gray-300 leading-tight focus:outline-none focus:shadow-outline focus:border-starlight-yellow" placeholder="Ej: Nebulosa de Orión - Mi Foto">
+                        </div>
+                        <div class="mb-6">
+                            <label for="fileDescription" class="block text-starlight-yellow text-sm font-bold mb-2">Descripción Breve:</label>
+                            <textarea id="fileDescription" name="fileDescription" rows="3" class="shadow appearance-none border border-cosmic-purple rounded w-full py-3 px-4 bg-space-blue text-gray-300 leading-tight focus:outline-none focus:shadow-outline focus:border-starlight-yellow" placeholder="Ej: Capturada con telescopio Celestron 8SE, cámara ZWO ASI294MC Pro..."></textarea>
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-starlight-yellow text-sm font-bold mb-2">Selecciona tu archivo:</label>
+                            <input type="file" id="fileUpload" class="custom-file-input text-gray-300 w-full" aria-describedby="file_input_help">
+                            <p class="mt-1 text-sm text-gray-400" id="file_input_help">Formatos permitidos: JPG, PNG, PDF, FITS (Max. 10MB).</p>
+                            <div id="fileNameDisplay" class="file-name-display"></div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn-primary px-8 py-3 rounded-full font-semibold text-lg">
+                                <i class="fas fa-upload mr-2"></i>Subir Archivo
+                            </button>
+                        </div>
+                    </form>
+                    <p class="text-xs text-gray-500 mt-6 text-center">Nota: La funcionalidad de subida de archivos es demostrativa. En un sitio real, se requeriría programación de backend.</p>
+                </div>
+            </section>
+
+            <section id="download-section" class="mb-12">
+                <h2 class="text-3xl font-bold text-center mb-10 section-title">Recursos Descargables</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="card p-6">
+                        <div class="flex items-center mb-3">
+                            <i class="fas fa-file-pdf fa-2x text-nebula-pink mr-4"></i>
+                            <h3 class="text-xl font-semibold text-white">Guía de Observación Lunar</h3>
+                        </div>
+                        <p class="text-gray-300 mb-4 text-sm leading-relaxed">Una guía completa para identificar cráteres, mares y otras formaciones lunares. Ideal para principiantes.</p>
+                        <div class="mb-4">
+                            <span class="inline-block bg-cosmic-purple text-starlight-yellow text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">PDF</span>
+                            <span class="inline-block bg-gray-700 text-gray-200 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">2.5 MB</span>
+                        </div>
+                        <a href="#" download="guia_observacion_lunar.pdf" class="btn-primary w-full text-center px-4 py-2 rounded-md font-semibold block">
+                            <i class="fas fa-download mr-2"></i>Descargar
+                        </a>
+                    </div>
+
+                    <div class="card p-6">
+                        <div class="flex items-center mb-3">
+                            <i class="fas fa-atlas fa-2x text-nebula-pink mr-4"></i>
+                            <h3 class="text-xl font-semibold text-white">Mapas Estelares (Hem. Sur)</h3>
+                        </div>
+                        <p class="text-gray-300 mb-4 text-sm leading-relaxed">Conjunto de mapas estelares mensuales para el Hemisferio Sur. Actualizados para 2025.</p>
+                        <div class="mb-4">
+                            <span class="inline-block bg-cosmic-purple text-starlight-yellow text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">PNG/ZIP</span>
+                            <span class="inline-block bg-gray-700 text-gray-200 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">15 MB</span>
+                        </div>
+                        <a href="#" download="mapas_estelares_sur_2025.zip" class="btn-primary w-full text-center px-4 py-2 rounded-md font-semibold block">
+                            <i class="fas fa-download mr-2"></i>Descargar
+                        </a>
+                    </div>
+
+                    <div class="card p-6">
+                        <div class="flex items-center mb-3">
+                            <i class="fas fa-journal-whills fa-2x text-nebula-pink mr-4"></i>
+                            <h3 class="text-xl font-semibold text-white">Artículo: Supernovas</h3>
+                        </div>
+                        <p class="text-gray-300 mb-4 text-sm leading-relaxed">Un artículo detallado sobre la formación, tipos y observación de supernovas. Nivel intermedio.</p>
+                        <div class="mb-4">
+                            <span class="inline-block bg-cosmic-purple text-starlight-yellow text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">PDF</span>
+                            <span class="inline-block bg-gray-700 text-gray-200 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">800 KB</span>
+                        </div>
+                        <a href="#" download="articulo_supernovas.pdf" class="btn-primary w-full text-center px-4 py-2 rounded-md font-semibold block">
+                            <i class="fas fa-download mr-2"></i>Descargar
+                        </a>
+                    </div>
+                     </div>
+            </section>
+
+            <section id="usage-policy" class="my-16">
+                <h2 class="text-3xl font-bold text-center mb-10 section-title">Normas de Uso y Contribución</h2>
+                <div class="max-w-3xl mx-auto card p-6 md:p-8">
+                    <ul class="space-y-4 text-gray-300">
+                        <li class="flex items-start"><i class="fas fa-check-circle text-yellow-400 mr-3 mt-1 flex-shrink-0"></i>Asegúrate de tener los derechos sobre cualquier material que subas.</li>
+                        <li class="flex items-start"><i class="fas fa-file-alt text-yellow-400 mr-3 mt-1 flex-shrink-0"></i>Proporciona descripciones claras y precisas para tus archivos.</li>
+                        <li class="flex items-start"><i class="fas fa-shield-alt text-yellow-400 mr-3 mt-1 flex-shrink-0"></i>No subas material ofensivo, ilegal o que infrinja derechos de autor.</li>
+                        <li class="flex items-start"><i class="fas fa-microscope text-yellow-400 mr-3 mt-1 flex-shrink-0"></i>Los archivos subidos podrán ser revisados por moderadores.</li>
+                        <li class="flex items-start"><i class="fas fa-hands-helping text-yellow-400 mr-3 mt-1 flex-shrink-0"></i>Al descargar, respeta las licencias de uso si las hubiera.</li>
+                        <li class="flex items-start"><i class="fas fa-comments text-yellow-400 mr-3 mt-1 flex-shrink-0"></i>Utiliza el foro para discutir sobre los archivos compartidos.</li>
+                    </ul>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="py-12 border-t border-gray-800">
+        <div class="container mx-auto px-6 text-center text-gray-400">
+            <div class="mb-6">
+                <a href="index.html" class="text-xl font-bold text-white hover:text-yellow-400 transition">
+                    <i class="fas fa-satellite mr-2 text-yellow-400"></i>Museo del Observatorio de San Miguel
+                </a>
+            </div>
+            <div class="mb-6 space-x-4 sm:space-x-6 text-sm">
+                <a href="index.html#ubicacion" class="hover:text-yellow-400">Ubicación</a>
+                <a href="index.html#equipo" class="hover:text-yellow-400">Quiénes Somos</a>
+                <a href="index.html#eventos" class="hover:text-yellow-400">Eventos</a>
+                <a href="cursos.html" class="hover:text-yellow-400">Cursos</a>
+                <a href="blog.html" class="hover:text-yellow-400">Blog</a>
+                <a href="foro.html" class="hover:text-yellow-400">Foro</a>
+                <a href="up_download.html" class="hover:text-yellow-400">Up/Download</a>
+                <a href="calendario.html" class="hover:text-yellow-400">Calendario</a>
+                <a href="premium.html" class="hover:text-yellow-400">Premium</a>
+            </div>
+            <div class="mb-6 flex justify-center space-x-6">
+                <a href="#" aria-label="Facebook" class="text-gray-400 hover:text-yellow-400 transition duration-300"><i class="fab fa-facebook-f fa-lg"></i></a>
+                <a href="#" aria-label="Instagram" class="text-gray-400 hover:text-yellow-400 transition duration-300"><i class="fab fa-instagram fa-lg"></i></a>
+                <a href="#" aria-label="Twitter" class="text-gray-400 hover:text-yellow-400 transition duration-300"><i class="fab fa-twitter fa-lg"></i></a>
+            </div>
+            <p class="text-sm">© <span id="currentYear"></span> Museo del Observatorio de San Miguel. Todos los derechos reservados.</p>
+            <p class="text-xs mt-2">Un proyecto para la difusión de la ciencia y la cultura cósmica.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navLinksMobile = mobileMenu.querySelectorAll('a');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        navLinksMobile.forEach(link => {
+            link.addEventListener('click', () => {
+                const href = link.getAttribute('href');
+                // Close menu if it's an anchor link on index.html or if it's a link to another page (not the current one)
+                if (href.includes('index.html#') || (href !== 'up_download.html' && !href.includes('up_download.html#'))) {
+                    mobileMenu.classList.add('hidden');
+                } else if (href.startsWith('#')) { 
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+        
+        // Current Year in Footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Dynamic satellite icon link
+        const satelliteIconLink = document.querySelector('.navbar-glass .fa-satellite').parentElement;
+        if (satelliteIconLink) {
+            satelliteIconLink.href = "https://www.solarsystemscope.com/"; 
+            satelliteIconLink.target = "_blank"; 
+        }
+
+        // File input name display
+        const fileUploadInput = document.getElementById('fileUpload');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        if (fileUploadInput) {
+            fileUploadInput.addEventListener('change', function() {
+                if (this.files && this.files.length > 0) {
+                    fileNameDisplay.textContent = `Archivo seleccionado: ${this.files[0].name}`;
+                } else {
+                    fileNameDisplay.textContent = '';
+                }
+            });
+        }
+
+        // Handle form submission (demonstration)
+        const uploadForm = document.getElementById('uploadForm');
+        if (uploadForm) {
+            uploadForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent actual form submission
+                // In a real application, you would handle file upload here.
+                // For demonstration, we can just show an alert or a message.
+                const title = document.getElementById('fileTitle').value;
+                const file = document.getElementById('fileUpload').files[0];
+                let message = "Formulario enviado (simulación).\n";
+                if (title) message += `Título: ${title}\n`;
+                if (file) message += `Archivo: ${file.name}\n`;
+                
+                // Create a custom message box instead of alert
+                const existingModal = document.getElementById('customModal');
+                if (existingModal) existingModal.remove();
+
+                const modal = document.createElement('div');
+                modal.id = 'customModal';
+                modal.style.position = 'fixed';
+                modal.style.left = '50%';
+                modal.style.top = '50%';
+                modal.style.transform = 'translate(-50%, -50%)';
+                modal.style.backgroundColor = 'var(--cosmic-purple)';
+                modal.style.color = 'var(--starlight-yellow)';
+                modal.style.padding = '20px';
+                modal.style.border = '1px solid var(--starlight-yellow)';
+                modal.style.borderRadius = '8px';
+                modal.style.boxShadow = '0 4px 15px rgba(0,0,0,0.5)';
+                modal.style.zIndex = '1000';
+                modal.style.textAlign = 'center';
+                
+                const messageParagraph = document.createElement('p');
+                messageParagraph.innerText = message;
+                messageParagraph.style.marginBottom = '15px';
+                
+                const closeButton = document.createElement('button');
+                closeButton.innerText = 'Cerrar';
+                closeButton.classList.add('btn-primary'); // Apply existing button style
+                closeButton.style.padding = '8px 16px'; // Adjust padding if needed
+                closeButton.onclick = function() {
+                    modal.remove();
+                };
+                
+                modal.appendChild(messageParagraph);
+                modal.appendChild(closeButton);
+                document.body.appendChild(modal);
+
+                uploadForm.reset(); // Reset form fields
+                if(fileNameDisplay) fileNameDisplay.textContent = ''; // Clear file name display
+            });
+        }
+
+    </script>
+</body>
+</html>
